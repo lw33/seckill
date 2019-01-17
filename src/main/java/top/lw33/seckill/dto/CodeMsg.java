@@ -36,6 +36,11 @@ public class CodeMsg {
         this.msg = msg;
     }
 
+    public CodeMsg withArgs(Object... args) {
+        String msg = String.format(this.msg, args);
+        return new CodeMsg(this.code, msg);
+    }
+
     public Integer getCode() {
         return code;
     }

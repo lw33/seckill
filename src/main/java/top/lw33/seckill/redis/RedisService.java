@@ -22,7 +22,7 @@ public class RedisService {
 
         try {
             jedis = jedisPool.getResource();
-            String realKey = prefix + key;
+            String realKey = prefix.getPrefix() + key;
             String res = jedis.get(realKey);
             T t = JsonUtil.string2bean(res, clazz);
             return t;
@@ -39,7 +39,7 @@ public class RedisService {
             if (StringUtils.isEmpty(value)) {
                 return false;
             }
-            String realKey = prefix.getPrefix() + prefix;
+            String realKey = prefix.getPrefix() + key;
             if (prefix.expireSeconds() > 0) {
                 jedis.setex(realKey, prefix.expireSeconds(), value);
             } else {

@@ -1,12 +1,14 @@
 package top.lw33.seckill.exception;
 
+import org.springframework.validation.BindException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import top.lw33.seckill.dto.CodeMsg;
 import top.lw33.seckill.dto.Result;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.BindException;
 
 /**
  * @Author lw
@@ -24,10 +26,10 @@ public class GlobalExceptionHandler {
             return Result.error(ex.getCodeMsg());
         } else if (e instanceof BindException) {
             BindException be = (BindException) e;
-            //return Result.error()
-            return null;
+            ObjectError objectError = be.getAllErrors().get(0);
+            return Result.error(CodeMsg.BIND_ERROR.withArgs(objectError.getDefaultMessage()));
         } else {
-            return null;
+            return Result.error(CodeMsg.SERVER_ERROR);
         }
     }
 
