@@ -1,4 +1,4 @@
-package top.lw33.seckill.result;
+package top.lw33.seckill.dto;
 
 /**
  * @Author lw

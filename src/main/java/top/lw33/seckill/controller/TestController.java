@@ -1,12 +1,14 @@
 package top.lw33.seckill.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import top.lw33.seckill.result.CodeMsg;
-import top.lw33.seckill.result.Result;
+import top.lw33.seckill.redis.RedisService;
+import top.lw33.seckill.dto.CodeMsg;
+import top.lw33.seckill.dto.Result;
 
 /**
  * @Author lw
@@ -15,6 +17,9 @@ import top.lw33.seckill.result.Result;
 
 @Controller
 public class TestController {
+
+    @Autowired
+    private RedisService redisService;
 
     @RequestMapping("/test")
     @ResponseBody
@@ -41,4 +46,19 @@ public class TestController {
         model.addAttribute("name", "java");
         return "hello";
     }
+
+   /* @RequestMapping("/get/{key}")
+    @ResponseBody
+    public Result<String> get(@PathVariable("key") String key) {
+        //String s = redisService.get(key, String.class);
+        return Result.success(s);
+    }
+
+
+    @RequestMapping("/set/{key}/{value}")
+    @ResponseBody
+    public Result<String> set(@PathVariable("key") String key, @PathVariable("value") String value) {
+        boolean set = redisService.set(key, value);
+        return Result.success(String.valueOf(set));
+    }*/
 }
