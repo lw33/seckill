@@ -6,9 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import top.lw33.seckill.redis.RedisService;
 import top.lw33.seckill.dto.CodeMsg;
 import top.lw33.seckill.dto.Result;
+import top.lw33.seckill.rabbitmq.MQSender;
+import top.lw33.seckill.redis.RedisService;
 
 /**
  * @Author lw
@@ -45,6 +46,16 @@ public class TestController {
     public String thy(Model model) {
         model.addAttribute("name", "java");
         return "hello";
+    }
+
+    @Autowired
+    private MQSender mqSender;
+
+    @RequestMapping("/rmq/{msg}")
+    @ResponseBody
+    public Result<String> rmq(@PathVariable("msg")String msg) {
+        mqSender.send(msg);
+        return Result.success(msg);
     }
 
    /* @RequestMapping("/get/{key}")

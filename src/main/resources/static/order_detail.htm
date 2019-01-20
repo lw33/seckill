@@ -17,43 +17,36 @@
     <script type="text/javascript" src="/js/md5.min.js"></script>
     <!-- common.js -->
     <script type="text/javascript" src="/js/common.js"></script>
-    <style type="text/css">
-        html,body{
-            height:100%;
-            width:100%;
-        }
-        body{
-            background:url('/img/bg2.jpg') no-repeat;
-            background-size:100% 100%;
-        }
-        #goodslist td{
-            border-top:1px solid #39503f61;
-        }
-    </style>
 </head>
 <body>
-<div class="panel panel-default"  style="height:100%;background-color:rgba(222,222,222,0.8)">
+<div class="panel panel-default">
   <div class="panel-heading">秒杀订单详情</div>
   <table class="table" id="goodslist">
         <tr>  
         <td>商品名称</td>  
-        <td colspan="3" id="goodsName"></td> 
+        <td id="goodsName" colspan="3"></td>
      </tr>  
      <tr>  
         <td>商品图片</td>  
-        <td colspan="2"><img  id="goodsImg" width="200" height="200" /></td>  
+        <td colspan="2"><img id="goodsImg" width="200" height="200" /></td>
      </tr>
       <tr>  
         <td>订单价格</td>  
-        <td colspan="2"  id="orderPrice"></td>  
+        <td colspan="2" id="goodsPrice"></td>
      </tr>
      <tr>
      		<td>下单时间</td>  
-        	<td id="createDate" colspan="2"></td>  
+        	<td id="orderDate" colspan="2"></td>
      </tr>
      <tr>
      	<td>订单状态</td>  
         <td id="orderStatus">
+        	<!--<span if="${orderInfo.status eq 0}">未支付</span>
+        	<span if="${orderInfo.status eq 1}">待发货</span>
+        	<span if="${orderInfo.status eq 2}">已发货</span>
+        	<span if="${orderInfo.status eq 3}">已收货</span>
+        	<span if="${orderInfo.status eq 4}">已退款</span>
+        	<span if="${orderInfo.status eq 5}">已完成</span>-->
         </td>  
         <td>
         	<button class="btn btn-primary btn-block" type="submit" id="payButton">立即支付</button>
@@ -69,51 +62,57 @@
      </tr>
   </table>
 </div>
-</body>
-</html>
 <script>
-function render(detail){
-	var goods = detail.goods;
-	var order = detail.order;
-	$("#goodsName").text(goods.goodsName);
-	$("#goodsImg").attr("src", goods.goodsImg);
-	$("#orderPrice").text(order.goodsPrice);
-	$("#createDate").text(new Date(order.createDate).format("yyyy-MM-dd hh:mm:ss"));
-	var status = "";
-	if(order.status == 0){
-		status = "未支付"
-	}else if(order.status == 1){
-		status = "待发货";
-	}
-	$("#orderStatus").text(status);
-	
-}
 
-$(function(){
-	getOrderDetail();
-})
+    $(function () {
+        getDetail();
+    });
 
-function getOrderDetail(){
-	var orderId = g_getQueryString("orderId");
-	$.ajax({
-		url:"/order/detail",
-		type:"GET",
-		data:{
-			orderId:orderId
-		},
-		success:function(data){
-			if(data.code == 0){
-				render(data.data);
-			}else{
-				layer.msg(data.msg);
-			}
-		},
-		error:function(){
-			layer.msg("客户端请求有误");
-		}
-	});
-}
+    function getDetail() {
+        var orderId = g_getQueryString("orderId");
+        $.ajax({
+            url: "/order/detail",
+            type: "get",
+            data: {
+                orderId: orderId
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("请求错误");
+            }
+        });
+    }
 
-
+    function render(detail) {
+        var goods = detail.goods;
+        var order = detail.order;
+        $("#goodsName").text(goods.goodsName);
+        $("#goodsImg").attr("src", goods.goodsImg);
+        $("#goodsPrice").text(goods.goodsPrice);
+        $("#orderDate").text(new Date(order.createDate).format("yyyy-MM-dd hh:mm:ss"));
+        /*<!--<span if="${orderInfo.status eq 0}">未支付</span>
+            <span if="${orderInfo.status eq 1}">待发货</span>
+            <span if="${orderInfo.status eq 2}">已发货</span>
+            <span if="${orderInfo.status eq 3}">已收货</span>
+            <span if="${orderInfo.status eq 4}">已退款</span>
+            <span if="${orderInfo.status eq 5}">已完成</span>-->
+    }*/
+        switch (order.status) {
+            case 0:
+                $("#orderStatus").text("未支付");
+                break;
+            case 1:
+                $("#orderStatus").text("待发货");
+                break;
+        }
+    }
 
 </script>
+</body>
+</html>

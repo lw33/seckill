@@ -25,7 +25,14 @@ public class GoodsService {
         return goodsDao.selectGoodsVoById(goodsId);
     }
 
-    public void reduceStock(GoodsVo goods) {
-        goodsDao.updateStock(goods.getId());
+    public boolean reduceStock(GoodsVo goods) {
+        int i = goodsDao.updateStock(goods.getId());
+        return i > 0;
+    }
+
+    public void resetStock(List<GoodsVo> goodsList) {
+        for (GoodsVo goodsVo : goodsList) {
+            goodsDao.updateStockById(goodsVo);
+        }
     }
 }

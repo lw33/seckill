@@ -22,6 +22,9 @@ public interface GoodsDao {
             " from goods g, seckill_goods sg where g.id=sg.goods_id and goods_id = #{goodsId}")
     GoodsVo selectGoodsVoById(Long goodsId);
 
-    @Update("update seckill_goods set stock_count=stock_count-1 where goods_id=#{id}")
-    void updateStock(Long id);
+    @Update("update seckill_goods set stock_count=stock_count-1 where goods_id=#{id} and stock_count>0")
+    int updateStock(Long id);
+
+    @Update("update seckill_goods set stock_count=#{stockCount} where goods_id=#{id}")
+    void updateStockById(GoodsVo goodsVo);
 }

@@ -11,7 +11,4 @@ public class UserKeyPrefix extends BaseKeyPrefix{
     }
 
     public static final UserKeyPrefix idKey = new UserKeyPrefix("id");
-    public static final UserKeyPrefix nameKey = new UserKeyPrefix("name");
-
-
 }

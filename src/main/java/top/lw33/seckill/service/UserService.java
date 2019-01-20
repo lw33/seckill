@@ -10,6 +10,7 @@ import top.lw33.seckill.dto.CodeMsg;
 import top.lw33.seckill.entity.User;
 import top.lw33.seckill.exception.GlobalException;
 import top.lw33.seckill.redis.RedisService;
+import top.lw33.seckill.redis.UserKeyPrefix;
 import top.lw33.seckill.redis.UserSessionKeyPrefix;
 import top.lw33.seckill.utils.MD5Util;
 import top.lw33.seckill.utils.UUIDUtil;
@@ -49,6 +50,7 @@ public class UserService {
             user.setSalt(salt);
             user.setNickname(String.valueOf(phoneName));
             userDao.insertUser(user);
+            redisService.set(UserKeyPrefix.idKey, String.valueOf(phoneName), user);
             logger.info(phoneName + " register...");
         } else {
             String DBPassword = user.getPassword();
@@ -65,14 +67,14 @@ public class UserService {
 
 
     public User getUserById(long id) {
-       /* User user = redisService.get(UserKeyPrefix.idKey, String.valueOf(id), User.class);
+        User user = redisService.get(UserKeyPrefix.idKey, String.valueOf(id), User.class);
         if (user != null) {
             return user;
-        }*/
-        User user = userDao.selectUserById(id);
-       /* if (user != null) {
+        }
+        user = userDao.selectUserById(id);
+        if (user != null) {
             redisService.set(UserKeyPrefix.idKey, String.valueOf(id), user);
-        }*/
+        }
         return user;
     }
     public User getUserByToken(HttpServletResponse response, String token) {
@@ -85,6 +87,23 @@ public class UserService {
         }
         return user;
     }
+
+    public boolean updatePassword(String token, long id, String password) {
+        User user = getUserById(id);
+        if (user == null) {
+            throw new GlobalException(CodeMsg.PHONE_NUM_NOT_EXIST);
+        }
+        password = MD5Util.formPassToDBPass(password, user.getSalt());
+        if (user.getPassword().equals(password)) {
+            return true;
+        }
+        userDao.updateUserPassword(id, password);
+        user.setPassword(password);
+        redisService.set(UserSessionKeyPrefix.tokenKey, token, user);
+        redisService.delete(UserKeyPrefix.idKey, String.valueOf(id));
+        return true;
+    }
+
     private void addCookie(HttpServletResponse response, String token, User user) {
         redisService.set(UserSessionKeyPrefix.tokenKey, token, user);
         Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);

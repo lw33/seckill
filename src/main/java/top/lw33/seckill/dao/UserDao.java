@@ -1,8 +1,6 @@
 package top.lw33.seckill.dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import top.lw33.seckill.entity.User;
 
 /**
@@ -17,4 +15,7 @@ public interface UserDao {
 
     @Insert("insert into `user`(id, password, salt, nickname) values(#{id}, #{password}, #{salt}, #{nickname})")
     void insertUser(User user);
+
+    @Update("update `user` set password=#{password} where id=#{id}")
+    void updateUserPassword(@Param("id") long id, @Param("password") String password);
 }
